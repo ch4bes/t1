@@ -11,6 +11,33 @@ Weather forecasts are typically issued for a window of ~10 days. The accuracy of
 - **Analyze accuracy** - See how forecast accuracy improves as dates approach
 - **Identify patterns** - Understand which forecast horizons are most reliable
 
+## Weather Data Sources
+
+This project works with any weather station or forecast source. For **Weather Underground Personal Weather Stations (PWS)**:
+
+### Finding Your Station
+
+1. Visit [Weather Underground](https://www.wunderground.com/)
+2. Search for your location or PWS ID
+3. Copy the station ID (e.g., `KYOURPWS123`)
+
+### Data Sources (replace YOUR_STATION with your PWS ID)
+
+- **10-Day Forecast:** `https://www.wunderground.com/forecast/.../YOUR_STATION`
+- **Historical Data:** `https://www.wunderground.com/dashboard/pws/YOUR_STATION`
+
+### Quick Setup
+
+```bash
+python3 run.py init
+
+# Add your weather station
+python3 run.py add-station KYOURPWS123 "Home Station"
+
+# Or add any custom location
+python3 run.py add-location "San Francisco" 37.00 -120.00 "Bay Area, CA"
+```
+
 ## Project Structure
 
 ```
@@ -47,7 +74,7 @@ All commands are run via `python3 run.py <command>`:
 ### Add a Location
 
 ```bash
-python3 run.py add-location "San Francisco" 37.7749 -122.4194 "Bay Area, CA"
+python3 run.py add-location "San Francisco" 37.0049 -122.4194 "Bay Area, CA"
 ```
 
 ### List Locations
@@ -92,9 +119,9 @@ python3 run.py accuracy 2026-02-16 1
 ## Example Workflow
 
 ```bash
-# Day 1 (Feb 16): Initialize and add location
+# Initialize database and add your location
 python3 run.py init
-python3 run.py add-location "Home" 37.77 -122.42
+python3 run.py add-station KYOURPWS123 "Home"
 
 # Day 1 (Feb 16): Record the 10-day forecast
 python3 run.py add-forecast 2026-02-16 1 \

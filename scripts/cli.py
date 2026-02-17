@@ -1,17 +1,25 @@
 """
 Command-line interface for weather forecast tracking.
 Usage:
-    python scripts/cli.py <command> [options]
+    python3 run.py <command> [options]
 
 Commands:
     init                    Initialize the database
     add-location            Add a new location
+    add-station             Add a Weather Underground PWS station
     list-locations          List all locations
     add-forecast            Add a forecast run with daily forecasts
     list-forecasts          List forecast runs
     add-actual              Record actual weather for a date
     list-actual             List actual weather records
     accuracy                Analyze forecast accuracy for a date
+
+Example:
+    python3 run.py add-station KYOURPWS123 "My Station" 37.00 -120.00
+    
+    Data sources (replace STATION_ID with your station):
+    Forecast: https://www.wunderground.com/forecast/.../STATION_ID
+    Historical: https://www.wunderground.com/dashboard/pws/STATION_ID
 """
 import sys
 from datetime import date, datetime
@@ -82,7 +90,8 @@ def cmd_list_locations(args):
     locations = service.list_locations()
     if not locations:
         print("No locations found.")
-        print("\nAdd a location with: python scripts/cli.py add-location <name> [lat] [lon] [description]")
+        print("\nAdd a location with: python3 run.py add-location <name> [lat] [lon] [description]")
+        print("Or quickly add a Weather Underground PWS with: python3 run.py add-station")
         return
 
     print(f"{'ID':<6} {'Name':<25} {'Coordinates':<25}")
@@ -90,6 +99,50 @@ def cmd_list_locations(args):
     for loc in locations:
         coords = f"{loc.latitude}, {loc.longitude}" if loc.latitude else "N/A"
         print(f"{loc.id:<6} {loc.name:<25} {coords:<25}")
+
+
+def cmd_add_station(args):
+    """Add a Weather Underground Personal Weather Station (PWS)."""
+    if len(args) < 1:
+        print("""
+Usage: python3 run.py add-station <station_id> [name] [latitude] [longitude]
+
+Example:
+  python3 run.py add-station KYOURPWS123 "Home Station" 37.00 -120.00
+
+Arguments:
+  station_id    Weather Underground station ID (e.g., KYOURPWS123)
+  name          Friendly name for the location (default: PWS_<station_id>)
+  latitude      Station latitude (optional)
+  longitude     Station longitude (optional)
+""")
+        return
+
+    station_id = args[0]
+    display_name = args[1] if len(args) > 1 else f"PWS_{station_id}"
+    latitude = float(args[2]) if len(args) > 2 else None
+    longitude = float(args[3]) if len(args) > 3 else None
+    description = f"Weather Underground Station {station_id}"
+
+    db = next(get_db())
+    service = WeatherService(db)
+
+    # Check if station already exists
+    existing = service.get_location_by_name(display_name)
+    if existing:
+        print(f"⚠️  Station '{display_name}' already exists (ID: {existing.id})")
+        return
+
+    location = service.create_location(display_name, latitude, longitude, description)
+    print(f"✓ Weather station added successfully!")
+    print(f"  Station ID: {station_id}")
+    print(f"  Location ID: {location.id}")
+    print(f"  Name: {location.name}")
+    if latitude:
+        print(f"  Coordinates: {location.latitude}, {location.longitude}")
+    print(f"\n📊 Data Sources:")
+    print(f"  Forecast: https://www.wunderground.com/forecast/.../{station_id}")
+    print(f"  Historical: https://www.wunderground.com/dashboard/pws/{station_id}")
 
 
 def cmd_add_forecast(args):
@@ -299,6 +352,7 @@ def main():
     commands = {
         "init": cmd_init,
         "add-location": cmd_add_location,
+        "add-station": cmd_add_station,
         "list-locations": cmd_list_locations,
         "add-forecast": cmd_add_forecast,
         "list-forecasts": cmd_list_forecasts,
