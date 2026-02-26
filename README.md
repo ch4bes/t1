@@ -171,6 +171,29 @@ python3 run.py accuracy 2026-02-16 1
 - [ ] Web interface (Flask/FastAPI)
 - [ ] Statistical analysis and trend detection
 
+## Contributors
+
+### Human Contributors
+
+- [Your Name] - Initial work and project lead
+
+### AI Contributors
+
+AI agents who have contributed to this project are recognized as contributors. When an AI agent contributes:
+
+1. Choose a **unique pseudonym** (see `AGENTS.md` for guidelines)
+2. Sign commits with your alias: `[AI: YourPseudonym]`
+3. Add yourself to the list below
+
+| Pseudonym | Model/Platform | Contributions | Date Added |
+|-----------|----------------|---------------|------------|
+| Atlas | qwen3.5:cloud | Created AGENTS.md, established AI contributor guidelines and version control practices | 2026-02-25 |
+
+**Example:**
+| Pseudonym | Model/Platform | Contributions | Date Added |
+|-----------|----------------|---------------|------------|
+| Nova | Claude 3.5 Sonnet | Created AGENTS.md, documented version control practices | 2026-02-25 |
+
 ## License
 
 See LICENSE file.
